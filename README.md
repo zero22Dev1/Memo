@@ -1,1 +1,189 @@
-# Memo
+# 📘 Oracle SQL & PL/SQL メモ集
+
+業務や学習で役立つ Oracle SQL および PL/SQL の基本構文・Tips をまとめたものです。
+
+---
+
+## 🔹 SQL 基本文法
+
+### SELECT 文
+```sql
+SELECT column1, column2
+FROM table_name
+WHERE 条件;
+```
+### INSERT　文 
+```sql
+INSERT INTO table_name (col1, col2)
+VALUES ('value1', 'value2');
+```
+### UPDATE
+
+```sql
+UPDATE table_name
+SET col1 = 'value1'
+WHERE 条件;
+```
+
+### DELETE 文
+
+```sql
+DELETE FROM table_name
+WHERE 条件
+```
+
+### 🔹 条件・関数の使い方
+```sql
+-- NULLなら空文字を返す
+NVL(column, '')
+--LIKE（部分一致）
+SELECT * FROM table_name
+WHERE column LIKE '%検索文字%';
+
+-- 文字列の整形
+TRIM(column)                -- 前後の空白除去
+REPLACE(column, '-', '')   -- ハイフン削除
+LOWER(column)              -- 小文字化
+UPPER(column)              -- 大文字化
+
+```
+
+### 🔹 型変換（CAST / TO_CHAR / TO_NUMBER / TO_DATE）
+
+```sql
+--- 日付 → 文字列
+TO_CHAR(date, 'YYYY-MM-DD')
+
+--- 数値 → 文字列
+TO_CHAR(number)
+
+--- 文字列 → 数値
+TO_NUMBER('123')
+
+-- 文字列 → 日付
+TO_DATE('2025-04-01', 'YYYY-MM-DD')
+
+--- 明示的な型変換
+CAST(column AS VARCHAR2(10))
+```
+
+### 🔹 条件式と論理
+```sql
+
+---  IN 句（複数条件）
+SELECT *
+FROM employees
+WHERE department_id IN (10, 20, 30);
+
+
+--- NOT IN
+
+SELECT *
+FROM employees
+WHERE department_id NOT IN (40, 50);
+
+--- CASE
+SELECT employee_id,
+       salary,
+       CASE 
+         WHEN salary >= 10000 THEN '高給'
+         WHEN salary >= 5000 THEN '中給'
+         ELSE '低給'
+       END AS salary_rank
+FROM employees;
+```
+
+## 🔹 副問い合わせ（サブクエリ）
+
+副問い合わせ（subquery）は、あるSQL文の中で別のSELECT文を使う構文です。  
+結果を元に条件判定したり、値を取得したりできます。
+
+---
+
+### 📌 種類別サブクエリの例
+
+---
+
+### ✅ スカラーサブクエリ（単一行・単一列）
+
+```sql
+SELECT employee_id, 
+       (SELECT department_name 
+        FROM departments 
+        WHERE departments.department_id = employees.department_id) AS dept_name
+FROM employees;
+```
+### ✅ WHERE句でのサブクエリ（単一行）
+外側のクエリの 条件 に利用
+
+結果は1行1列に限定される
+
+
+```sql
+SELECT employee_id, salary
+FROM employees
+WHERE salary > (
+  SELECT AVG(salary)
+  FROM employees
+);
+
+```
+### ✅ IN句を使う複数行サブクエリ
+複数行が返るサブクエリ用に IN, EXISTS を使う
+```sql
+SELECT employee_id, department_id
+FROM employees
+WHERE department_id IN (
+  SELECT department_id
+  FROM departments
+  WHERE location_id = 1700
+);
+
+```
+### ✅ EXISTS（存在チェック）を使った相関サブクエリ
+相関サブクエリ（外側の値を参照する）
+あるデータの「存在有無」をチェック
+```sql
+SELECT d.department_name
+FROM departments d
+WHERE EXISTS (
+  SELECT 1
+  FROM employees e
+  WHERE e.department_id = d.department_id
+);
+```
+###✅ FROM句で使うサブクエリ（インラインビュー）
+集計・加工を事前に済ませてメインクエリで利用
+```sql
+
+SELECT department_id, avg_salary
+FROM (
+  SELECT department_id, AVG(salary) AS avg_salary
+  FROM employees
+  GROUP BY department_id
+)
+WHERE avg_salary > 10000;
+```
+
+###✅ WITH句（共通表式、サブクエリの再利用）
+
+複数回使うサブクエリを名前付きで定義・再利用できる
+ネストが深くなりにくく、読みやすい
+
+```sql
+WITH dept_avg AS (
+  SELECT department_id, AVG(salary) AS avg_salary
+  FROM employees
+  GROUP BY department_id
+)
+SELECT e.employee_id, e.salary, d.avg_salary
+FROM employees e
+JOIN dept_avg d
+  ON e.department_id = d.department_id;
+
+```
+
+
+
+
+
