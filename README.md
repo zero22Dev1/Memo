@@ -1,6 +1,6 @@
-# 📘 Oracle SQL & PL/SQL メモ集
+# 📘 SQL & PL/SQL メモ集
 
-業務や学習で役立つ Oracle SQL および PL/SQL の基本構文・Tips をまとめたものです。
+業務や学習で役立つ　SQL および PL/SQL の基本構文・Tips をまとめたものです。
 
 ---
 
