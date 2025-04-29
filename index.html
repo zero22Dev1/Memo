@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Oracle SQL & PL/SQL メモ + MySQL比較</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.6; background-color: #f9f9f9; padding: 2rem; color: #333; }
+    h1, h2, h3 { color: #004080; }
+    code, pre { background-color: #f0f0f0; padding: 0.3rem 0.5rem; border-radius: 5px; display: block; overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background-color: #e0e0e0; }
+    blockquote { background-color: #eaf4ff; padding: 0.5rem 1rem; border-left: 5px solid #007acc; }
+  </style>
+</head>
+<body>
+
+<h1>📘 Oracle SQL & PL/SQL メモ + MySQL比較</h1>
+
+<p>Oracle SQL と PL/SQL の基本構文、実用例、MySQL との構文差異をまとめた資料です。</p>
+
+<h2>🔹 SQL 基本文法</h2>
+
+<h3>SELECT</h3>
+<pre><code>SELECT column1, column2
+FROM table_name
+WHERE 条件;
+</code></pre>
+
+<h3>INSERT</h3>
+<pre><code>INSERT INTO table_name (col1, col2)
+VALUES ('value1', 'value2');
+</code></pre>
+
+<h3>UPDATE</h3>
+<pre><code>UPDATE table_name
+SET col1 = 'value1'
+WHERE 条件;
+</code></pre>
+
+<h3>DELETE</h3>
+<pre><code>DELETE FROM table_name
+WHERE 条件;
+</code></pre>
+
+<h2>🔹 条件式・ロジック</h2>
+
+<pre><code>NVL(column, '')</code></pre>
+
+<pre><code>SELECT * FROM emp WHERE deptno IN (10, 20, 30);</code></pre>
+
+<pre><code>SELECT * FROM emp WHERE name LIKE '%対象%';</code></pre>
+
+<pre><code>SELECT name,
+       CASE WHEN salary > 10000 THEN 'High'
+            WHEN salary > 5000 THEN 'Mid'
+            ELSE 'Low' END AS salary_range
+FROM employees;
+</code></pre>
+
+<h2>🔹 文字列処理・型変換</h2>
+
+<pre><code>TRIM(column)
+REPLACE(column, '-', '')
+LOWER(column) / UPPER(column)
+TO_CHAR(date, 'YYYY-MM-DD')
+TO_NUMBER('123')
+TO_DATE('2024-01-01', 'YYYY-MM-DD')</code></pre>
+
+<h2>🔹 副問い合わせ</h2>
+
+<h3>スカラサブクエリ</h3>
+<pre><code>SELECT name,
+       (SELECT dept_name FROM dept WHERE dept.deptno = emp.deptno) AS dept_name
+FROM emp;
+</code></pre>
+
+<h3>WHERE句で使用</h3>
+<pre><code>SELECT * FROM emp
+WHERE salary > (SELECT AVG(salary) FROM emp);
+</code></pre>
+
+<h3>IN + サブクエリ</h3>
+<pre><code>SELECT * FROM emp
+WHERE deptno IN (SELECT deptno FROM dept WHERE location = 'TOKYO');
+</code></pre>
+
+<h3>EXISTS</h3>
+<pre><code>SELECT * FROM dept d
+WHERE EXISTS (
+  SELECT 1 FROM emp e WHERE e.deptno = d.deptno
+);
+</code></pre>
+
+<h3>インラインビュー</h3>
+<pre><code>SELECT deptno, avg_sal
+FROM (
+  SELECT deptno, AVG(sal) AS avg_sal
+  FROM emp
+  GROUP BY deptno
+) sub
+WHERE avg_sal > 1000;
+</code></pre>
+
+<h3>WITH句（MySQL 8.0+）</h3>
+<pre><code>WITH dept_avg AS (
+  SELECT deptno, AVG(sal) AS avg_sal
+  FROM emp
+  GROUP BY deptno
+)
+SELECT *
+FROM emp e
+JOIN dept_avg d ON e.deptno = d.deptno;
+</code></pre>
+
+<h2>🔹 PL/SQL カーソル</h2>
+
+<h3>基本構文</h3>
+<pre><code>DECLARE
+  v_name VARCHAR2(100);
+BEGIN
+  v_name := 'Oracle';
+  DBMS_OUTPUT.PUT_LINE('Hello ' || v_name);
+END;
+</code></pre>
+
+<h3>明示カーソル</h3>
+<pre><code>DECLARE
+  CURSOR cur_emp IS SELECT empno, ename FROM emp;
+  v_empno emp.empno%TYPE;
+  v_ename emp.ename%TYPE;
+BEGIN
+  OPEN cur_emp;
+  LOOP
+    FETCH cur_emp INTO v_empno, v_ename;
+    EXIT WHEN cur_emp%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(v_ename);
+  END LOOP;
+  CLOSE cur_emp;
+END;
+</code></pre>
+
+<h3>FORカーソル + COUNT</h3>
+<pre><code>DECLARE
+  CURSOR cur_dept IS SELECT deptno FROM dept;
+  wcount NUMBER;
+BEGIN
+  FOR rec IN cur_dept LOOP
+    SELECT COUNT(*) INTO wcount FROM emp WHERE deptno = rec.deptno;
+    DBMS_OUTPUT.PUT_LINE('Dept: ' || rec.deptno || ' Count: ' || wcount);
+  END LOOP;
+END;
+</code></pre>
+
+<h2>🔄 Oracle vs MySQL 比較</h2>
+
+<table>
+  <thead>
+    <tr><th>項目</th><th>Oracle</th><th>MySQL</th><th>備考</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>LIMIT句</td><td>ROWNUM / FETCH</td><td>LIMIT</td><td>Oracle 12c+</td></tr>
+    <tr><td>文字列連結</td><td>'A' || 'B'</td><td>CONCAT('A','B')</td><td>`||`はMySQLではOR</td></tr>
+    <tr><td>日付加算</td><td>SYSDATE + 1</td><td>DATE_ADD(NOW(), INTERVAL 1 DAY)</td><td>構文差あり</td></tr>
+    <tr><td>DUALテーブル</td><td>必要</td><td>不要</td><td>MySQLは `SELECT 1` でOK</td></tr>
+    <tr><td>WITH句（CTE）</td><td>可</td><td>8.0以降のみ</td><td>MySQL 5.xでは不可</td></tr>
+    <tr><td>シーケンス</td><td>SEQUENCE + NEXTVAL</td><td>AUTO_INCREMENT</td><td>仕組みが異なる</td></tr>
+  </tbody>
+</table>
+
+<h2>⚠️ 注意点</h2>
+<ul>
+  <li><code>SELECT INTO</code> は1行限定（複数行だと <code>TOO_MANY_ROWS</code> エラー）</li>
+  <li><code>NOT IN</code> + <code>NULL</code> は結果が0行になる可能性</li>
+  <li><code>||</code> は Oracle では文字連結、MySQL では OR になる</li>
+  <li>MySQL 8.0 より前は <code>WITH句</code> 未対応</li>
+</ul>
+
+<blockquote>✍️ このHTMLは学習・業務用に自由に編集・拡張してお使いください。</blockquote>
+
+</body>
+</html>
