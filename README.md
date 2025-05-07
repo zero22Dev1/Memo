@@ -75,6 +75,11 @@ SELECT *
 FROM employees
 WHERE department_id IN (10, 20, 30);
 
+--- count関数について
+---
+--- COUNT(*)：NULL含む「全行」カウント
+	COUNT(col)：NULL以外の「値あり」だけをカウント
+
 
 --- NOT IN
 
