@@ -174,7 +174,7 @@ WHERE avg_salary > 10000;
 
 複数回使うサブクエリを名前付きで定義・再利用できる
 ネストが深くなりにくく、読みやすい
-### 特定の文字を含む
+
 ```sql
 WITH dept_avg AS (
   SELECT department_id, AVG(salary) AS avg_salary
@@ -187,6 +187,8 @@ JOIN dept_avg d
   ON e.department_id = d.department_id;
 
 ```
+###特定の文字を含む
+
 ```sql
 
 SELECT
