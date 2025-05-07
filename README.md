@@ -174,7 +174,7 @@ WHERE avg_salary > 10000;
 
 複数回使うサブクエリを名前付きで定義・再利用できる
 ネストが深くなりにくく、読みやすい
-
+### 特定の文字を含む
 ```sql
 WITH dept_avg AS (
   SELECT department_id, AVG(salary) AS avg_salary
@@ -187,7 +187,19 @@ JOIN dept_avg d
   ON e.department_id = d.department_id;
 
 ```
+```sql
 
+SELECT
+  SUM(CASE WHEN name LIKE 'A%' THEN 1 ELSE 0 END) AS Aで始まる件数,
+  SUM(CASE WHEN name LIKE '%B%' THEN 1 ELSE 0 END) AS Bを含む件数
+FROM users;
+
+SELECT
+  COUNT(CASE WHEN name LIKE 'A%' THEN 1 END) AS Aで始まる件数,
+  COUNT(CASE WHEN name LIKE '%B%' THEN 1 END) AS Bを含む件数
+FROM users;
+
+```
 
 
 
