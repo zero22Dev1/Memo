@@ -6,18 +6,18 @@
 
 ## 🔹 SQL 基本文法
 
-### SELECT 文
+### SELECT文
 ```sql
 SELECT column1, column2
 FROM table_name
 WHERE 条件;
 ```
-### INSERT　文 
+### INSERT文 
 ```sql
 INSERT INTO table_name (col1, col2)
 VALUES ('value1', 'value2');
 ```
-### UPDATE
+### UPDATE文
 
 ```sql
 UPDATE table_name
@@ -25,7 +25,7 @@ SET col1 = 'value1'
 WHERE 条件;
 ```
 
-### DELETE 文
+### DELETE文
 
 ```sql
 DELETE FROM table_name
