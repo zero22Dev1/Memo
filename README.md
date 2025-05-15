@@ -1,3 +1,5 @@
+
+
 # 📘 SQL & PL/SQL メモ集
 
 業務や学習で役立つ　SQL および PL/SQL の基本構文・Tips をまとめたものです。
@@ -96,6 +98,36 @@ SELECT employee_id,
          ELSE '低給'
        END AS salary_rank
 FROM employees;
+
+```
+
+```sql
+
+--- •	SUBSTR(..., 開始位置, 長さ) で 長さ を指定しなかった場合：
+--- → その開始位置から文字列の最後までをすべて取ってしまう
+DECLARE
+  original_str VARCHAR2(4000) := '...';  -- 312文字以上の文字列を指定
+  part1 VARCHAR2(125);
+  part2 VARCHAR2(125);
+  part3 VARCHAR2(125);
+BEGIN
+  IF LENGTH(original_str) >= 1 THEN
+    part1 := SUBSTR(original_str, 1, 125);
+  END IF;
+
+  IF LENGTH(original_str) >= 126 THEN
+    part2 := SUBSTR(original_str, 126, 125);
+  END IF;
+
+  IF LENGTH(original_str) >= 251 THEN
+    part3 := SUBSTR(original_str, 251, 125);
+  END IF;
+
+  DBMS_OUTPUT.PUT_LINE('part1: ' || part1);
+  DBMS_OUTPUT.PUT_LINE('part2: ' || part2);
+  DBMS_OUTPUT.PUT_LINE('part3: ' || part3);
+END;
+
 ```
 
 ## 🔹 副問い合わせ（サブクエリ）
@@ -202,6 +234,10 @@ SELECT
 FROM users;
 
 ```
+
+
+
+
 
 
 
