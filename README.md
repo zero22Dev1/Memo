@@ -1,5 +1,9 @@
 
-
+Dim value As String = ""
+Dim node As XmlNode = xmlDoc.SelectSingleNode("//item/title")
+If node IsNot Nothing Then
+    value = node.InnerText
+End If
 # 📘 SQL & PL/SQL メモ集
 
 業務や学習で役立つ　SQL および PL/SQL の基本構文・Tips をまとめたものです。
