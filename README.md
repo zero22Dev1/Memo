@@ -233,8 +233,30 @@ FROM users;
 
 ```
 
-
-
+``` sql
+-- 全ロックを表示: ロックしているもの
+SELECT DO.OWNER || '.' || DO.OBJECT_NAME AS OBJECT,
+  DECODE(LO.LOCKED_MODE,
+     1, 'NULL',
+     2, '行共有(SS)',
+     3, '行排他(SX)',
+     4, '共有(S)',
+     5, '共有行排他(SRX)',
+     6, '排他(X)',
+     '???' ) AS LOCKED_MODE,
+  TO_CHAR(L.CTIME / 60,'99990.9') AS MIN,
+  LO.ORACLE_USERNAME,
+  LO.OS_USER_NAME,
+  LO.PROCESS,
+  S.SID,
+  S.SERIAL#
+FROM DBA_OBJECTS DO, V$LOCKED_OBJECT LO, V$LOCK L, V$SESSION S
+WHERE DO.OBJECT_ID = LO.OBJECT_ID AND
+  LO.SESSION_ID = L.SID AND
+  LO.XIDSQN = L.ID2 AND
+  LO.PROCESS = S.PROCESS AND
+  LO.XIDUSN > 0;
+```
 
 
 
