@@ -264,6 +264,14 @@ WHERE DO.OBJECT_ID = LO.OBJECT_ID AND
 
 ``` sql
 ALTER SYSTEM KILL SESSION '177,4335';
+
+-- アカウントの状態を確認
+SELECT username, account_status
+FROM dba_users
+WHERE username = 'ユーザー名';
+
+-- アカウントのロック解除
+ALTER USER ユーザー名 ACCOUNT UNLOCK;
 ```
 
 
