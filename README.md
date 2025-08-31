@@ -8,6 +8,16 @@
 
 ### SELECT文
 ```sql
+SELECT REPLACE(
+         REPLACE(
+           REPLACE(列名, CHR(13), ''), -- CR削除
+         CHR(10), ''),                 -- LF削除
+       CHR(9), ''                      -- TAB削除
+       ) AS clean_text
+FROM テーブル名;
+
+
+
 SELECT column1, column2
 FROM table_name
 WHERE 条件;
