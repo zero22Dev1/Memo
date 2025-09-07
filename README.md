@@ -8,6 +8,14 @@
 
 
 ```sql
+
+WITH vars AS (
+  SELECT COALESCE({{date}}, DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y%m%d')) AS target_date
+)
+SELECT *
+FROM your_table, vars
+WHERE your_table.target_date = vars.target_date;
+
 -- 昨日をデフォルト値として使用するクエリ
 WITH vars AS (
   SELECT DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y%m%d') AS yesterday
