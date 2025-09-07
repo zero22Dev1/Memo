@@ -6,6 +6,30 @@
 
 ## 🔹 SQL 基本文法
 
+
+```sql
+-- 昨日をデフォルト値として使用するクエリ
+WITH vars AS (
+  SELECT DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y%m%d') AS yesterday
+)
+SELECT *
+FROM your_table, vars
+WHERE target_date = COALESCE({{date}}, vars.yesterday);
+```
+
+```sql
+-- 今日をデフォルト値として使用するクエリ
+WITH vars AS (
+  SELECT DATE_FORMAT(CURDATE(), '%Y%m%d') AS today
+)
+SELECT *
+FROM your_table, vars
+WHERE target_date = COALESCE({{date}}, vars.today);
+```
+
+
+
+
 ### SELECT文
 ```sql
 SELECT REPLACE(
