@@ -371,6 +371,61 @@ if %errorlevel%==0 (
 
 pause
 ```
+## MySQL 関連サービスの状態を確認するコマンド
+```bat
+sc query state= all | findstr /i "mysql"
+```
+```bat
+@echo off
+REM ===============================
+REM MySQL84 サービス開始バッチ
+REM ===============================
 
+sc query MySQL84 | findstr /i "RUNNING" > nul
+if %errorlevel%==0 (
+    echo MySQL84 サービスはすでに起動しています。
+) else (
+    echo MySQL84 サービスを起動します...
+    net start MySQL84
+)
+
+pause
+```
+```bat
+@echo off
+REM ===============================
+REM MySQL84 サービス停止バッチ
+REM ===============================
+
+sc query MySQL84 | findstr /i "STOPPED" > nul
+if %errorlevel%==0 (
+    echo MySQL84 サービスはすでに停止しています。
+) else (
+    echo MySQL84 サービスを停止します...
+    net stop MySQL84
+)
+
+pause
+```
+
+```bat
+@echo off
+REM ===============================
+REM MySQL84 サービス再起動バッチ
+REM ===============================
+
+echo MySQL84 サービスを停止します...
+net stop MySQL84
+
+echo.
+echo サービスが完全に停止するまで待機中...
+timeout /t 5 > nul
+
+echo.
+echo MySQL84 サービスを起動します...
+net start MySQL84
+
+pause
+```
 
 
