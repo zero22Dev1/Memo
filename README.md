@@ -317,5 +317,60 @@ ALTER USER ユーザー名 ACCOUNT UNLOCK;
 ```
 
 
+```bat
+@echo off
+REM ===============================
+REM MySQL80 サービス再起動バッチ
+REM ===============================
+
+echo MySQL80 サービスを停止します...
+net stop MySQL80
+
+echo.
+echo サービスが完全に停止するまで待機中...
+timeout /t 5 > nul
+
+echo.
+echo MySQL80 サービスを起動します...
+net start MySQL80
+
+pause
+```
+
+```bat
+@echo off
+REM ===============================
+REM MySQL80 サービス停止バッチ
+REM ===============================
+
+sc query MySQL80 | findstr /i "STOPPED" > nul
+if %errorlevel%==0 (
+    echo MySQL80 サービスはすでに停止しています。
+) else (
+    echo MySQL80 サービスを停止します...
+    net stop MySQL80
+)
+
+pause
+```
+
+
+```bat
+@echo off
+REM ===============================
+REM MySQL80 サービス開始バッチ
+REM ===============================
+
+sc query MySQL80 | findstr /i "RUNNING" > nul
+if %errorlevel%==0 (
+    echo MySQL80 サービスはすでに起動しています。
+) else (
+    echo MySQL80 サービスを起動します...
+    net start MySQL80
+)
+
+pause
+```
+
 
 
