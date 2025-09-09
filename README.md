@@ -11,6 +11,22 @@ wmic process where "CommandLine like '%metabase%'" call terminate
 ```
 ```sql
 
+-- 上位20テーブルの物理サイズ
+SELECT table_name,
+       ROUND((data_length+index_length)/1024/1024,1) AS MB
+FROM information_schema.tables
+WHERE table_schema = '<metabase_db_name>'
+ORDER BY (data_length+index_length) DESC
+LIMIT 20;
+
+-- 日付・時刻系カラムのあるテーブル（削除/アーカイブ候補の探索）
+SELECT table_name, column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = '<metabase_db_name>'
+  AND data_type IN ('datetime','timestamp','date')
+ORDER BY table_name, column_name;
+
+
 WITH vars AS (
   SELECT COALESCE({{date}}, DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y%m%d')) AS target_date
 )
