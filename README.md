@@ -6,7 +6,9 @@
 
 ## 🔹 SQL 基本文法
 
-
+```bat
+wmic process where "CommandLine like '%metabase%'" call terminate
+```
 ```sql
 
 WITH vars AS (
