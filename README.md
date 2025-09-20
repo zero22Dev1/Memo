@@ -9,6 +9,20 @@
 ```bat
 wmic process where "CommandLine like '%metabase%'" call terminate
 ```
+
+```sql
+WHERE createdAt = COALESCE(
+  [[ {{dateOfCreation}} ]],
+  DATE_FORMAT(
+    CASE 
+      WHEN DAYOFWEEK(CURDATE()) = 2   -- 月曜なら金曜
+        THEN DATE_SUB(CURDATE(), INTERVAL 3 DAY)
+      ELSE DATE_SUB(CURDATE(), INTERVAL 1 DAY)  -- それ以外は前日
+    END,
+  '%Y%m%d')
+)
+```
+
 ```sql
 
 -- 上位20テーブルの物理サイズ
